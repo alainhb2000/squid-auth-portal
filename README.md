@@ -115,3 +115,16 @@ Portal de autenticación Web, para evitar peticiones con usuario y contraseña e
 * Dar acceso al usuario del squid al archivo */lib/squid-auth-helper.js*
   > chown proxy:proxy /portal/lib/squid-auth-helper.js
 
+# ACL en Squid
+> external_acl_type ipdbauth ttl=15 negative_ttl=0 %>a /usr/bin/node /portal/lib/squid-auth-helper.js
+> 
+> acl deteccion_portal url_regex ^http://detectportal.firefox.com/success.txt ^http://detectportal.firefox.com/canonical.html ^http://clients1.google.com/generate_204 ^http://clients2.google.com/generate_204 ^http://clients3.google.com/generate_204 ^http://connectivitycheck.gstatic.com/generate_204 ^http://www.msftncsi.com/ncsi.txt ^http://www.microsoftconnecttest.com/connecttest.txt ^http://ipv6.microsoftconnecttest.com/connecttest.txt ^http://captive.apple.com
+> 
+> acl ipauth external ipdbauth
+> 
+> http_access allow ipauth
+> 
+> http_access deny deteccion_portal
+> 
+> deny_info 302:http://proxy.tld.cu deteccion_portal !ipauth
+
