@@ -109,6 +109,8 @@ Portal de autenticación Web, para evitar peticiones con usuario y contraseña e
   > 
   > pm2 startup
 * Copiar proyecto a una carpeta, por ejemplo: */portal*, luego ejecutar la aplicación con pm2 y guardar sesión
+  > npm install
+  > 
   > pm2 start /portal/app.js --name Auth_Portal
   > 
   > pm2 save
