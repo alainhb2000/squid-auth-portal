@@ -109,6 +109,7 @@ Portal de autenticación Web, para evitar peticiones con usuario y contraseña e
   > pm2 startup
 * Copiar proyecto a una carpeta, por ejemplo: */portal*, luego ejecutar la aplicación con pm2 y guardar sesión
   > pm2 start /portal/app.js --name Auth_Portal
+  > 
   > pm2 save
 * Dar acceso al usuario del squid al archivo */lib/squid-auth-helper.js*
   > chown proxy:proxy /portal/lib/squid-auth-helper.js
