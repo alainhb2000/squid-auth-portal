@@ -1,0 +1,10 @@
+extends layout
+
+block body
+    div(style='padding: 10px; font-family: arial')
+        div(style='padding: 15px 15px; color: #ddd; background-color: #ff2040; border-radius: 5px;')
+            h2(style='margin: 10px 0;')= message
+            if (url)
+                p(style='margin: 0 0 10px 0')= url
+        if (error)
+            pre(style='background-color: #ddd; padding: 15px 15px; border-radius: 5px; font-size: 12px') #{error.stack}

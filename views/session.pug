@@ -1,0 +1,136 @@
+extends layout
+
+block head
+    title #{global.config.headText ? `${global.config.headText}:` : ""} Portal de autenticación
+    link(rel="stylesheet" href="/css/bulma.min.css" type="text/css")
+    script(src="/js/vue.global.prod.js" type="text/javascript")
+    script(src="/js/moment.min.js" type="text/javascript")
+    script(src="/js/moment-locale-es.js" type="text/javascript")
+    script(src="/js/moment-duration-format.min.js" type="text/javascript")
+    script(src='/socket.io/socket.io.js')
+    style.
+        .column-divider {
+            display: flex;
+            width: 1px;
+        }
+
+        .column-divider:after {
+            content: "";
+            height: 100%;
+            width: 100%;
+            background: #ccc;
+        }
+
+block body
+    .container
+        .columns.is-centered
+            .column.is-three-quarters-tablet.has-text-centered(style="max-width: 600px")
+                img(src='img/jc-logo.png' style='width: 80%')
+                .title.is-2 Portal de autenticación
+                .subtitle
+                    | Has iniciado la sesión correctamente, no olvides cerrarla en cuanto termines de usarla.
+
+                .card(style='margin: 40px auto; max-width: 600px; padding-top: 30px; padding-bottom: 30px;')
+                    .card-content
+                        .title.is-6(:class="connected && !closedConnection ? 'has-text-success' : 'has-text-danger'" style='margin-bottom: 40px;')
+                            | {{connected && !closedConnection ? "Conectado con el servidor" : "En estos momentos no hay conexión con el servidor"}}
+
+                        form(@submit="closeSession" method="POST")
+                            div(style='display: flex; justify-content: space-evenly;')
+                                .field(style='text-align: center')
+                                    .control
+                                        label.label Cuenta
+                                        .subtitle.is-4.has-text-grey-light {{account}}
+
+                                .column-divider
+
+                                .field(style='text-align: center')
+                                    .control
+                                        label.label Hora de inicio
+                                        .subtitle.is-4.has-text-grey-light {{timeStarted}}
+
+                                .column-divider
+
+                                .field(style='text-align: center')
+                                    .control
+                                        label.label Transcurrido
+                                        .subtitle.is-4.has-text-grey-light(v-text="timeElapsed")
+
+                            .field(style='margin-top: 50px')
+                                button.button.is-large.is-fullwidth.is-danger(type="submit", :class="!connected ? 'is-loading' : ''") Cerrar sesión
+
+                .subtitle.is-7(style='margin-top: 20px') Desarrollado por Alain Herrera Brito, Nodo Provincial, Matanzas, 2022.
+
+block scripts
+    script.
+        moment.locale('es-MX');
+        const {createApp} = Vue;
+
+        createApp({
+            data() {
+                return {
+                    ws: null,
+                    ip: "#{session._id}",
+                    account: "#{session.account}",
+                    closedSession: false,
+                    connected: true,
+                    timer: '',
+                    startTime: moment.unix(#{session.startTime}),
+                    timeStarted: moment.unix(#{session.startTime}).format("hh:mm:ss a"),
+                    timeElapsed: '',
+                    errors: !{JSON.stringify(errors || [])}
+                }
+            },
+            created() {
+                const t = this;
+                t.refreshTime();
+                t.timer = setInterval(t.refreshTime, 1000);
+                t.ws = t.connect();
+            },
+            methods: {
+                refreshTime() {
+                    const seconds = moment(new Date()).diff(this.startTime, "seconds");
+                    this.timeElapsed = moment.duration(seconds, "seconds").format("dd:hh:mm:ss");
+                },
+                cancelRefresh() {
+                    clearInterval(this.timer);
+                },
+                connect() {
+                    const t = this;
+                    const ws = io.connect('/keepalive', {transports: ['websocket']});
+                    ws.on('connect', () => {
+                        t.connected = true;
+                    });
+                    ws.on('disconnect', () => {
+                        t.connected = false;
+                    })
+                    ws.on('no-session', () => {
+                        t.closedConnection = true;
+                        ws.disconnect();
+                        window.location = '/';
+                    });
+                    ws.on('session-data', (dt) => {
+                        t.account = dt.account;
+                        t.startTime = moment.unix(dt.startTime);
+                        t.timeStarted = moment.unix(dt.startTime).format("hh:mm:ss a");
+                    })
+                    ws.on('session-closed', (dt) => {
+                        console.log(dt)
+                        if (dt !== this.ip) return;
+                        t.closedConnection = true;
+                        ws.disconnect();
+                        window.location = '/';
+                    })
+                    return ws;
+                },
+                closeSession() {
+                    t.closedConnection = true;
+                    this.ws && this.ws.disconnect();
+                }
+            },
+            beforeDestroy() {
+                this.ws && this.ws.disconnect();
+                this.cancelRefresh();
+            }
+        }).mount('#app')
+

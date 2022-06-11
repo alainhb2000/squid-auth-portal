@@ -1,0 +1,20 @@
+{
+  "headText": "Squid Auth Portal",
+  "mongoConnection": "mongodb://127.0.0.1:27017/squid-auth-portal",
+  "activeDirectory": false,
+  
+  "ldapConnection": "",
+  "ldapAdminUsr": "",
+  "ldapAdminPwd": "",
+  "ldapDn": "",
+  "domainName": "",
+  "usersDn": "",
+  
+  "isBehindWebserver": false,
+  "backendPort": 4000,
+  "sessionExpiration": 60,
+  "serveWpad" : true,
+  "cert": "",
+  "key": "",
+  "trustedIps" : []
+}

@@ -1,0 +1,65 @@
+extends layout
+
+block head 
+    title #{global.config.headText ? `${global.config.headText}:` : ""} Portal de autenticación
+    link(rel="stylesheet" href="/css/bulma.min.css" type="text/css")
+    script(src="/js/vue.global.prod.js" type="text/javascript")
+
+block body
+    .container
+        .columns.is-centered
+            .column.is-three-quarters-tablet.has-text-centered(style="max-width: 600px")
+                img(src='img/jc-logo.png' style='width: 80%')
+                .title.is-2 Portal de autenticación
+                .subtitle Use sus credenciales para tener acceso a la navegación
+
+                .card(style='margin: 40px auto; max-width: 510px; padding-top: 30px; padding-bottom: 30px;')
+                    .card-content.has-text-left
+
+                        .notification.is-danger(v-if="errors && errors.length > 0")
+                            p(v-for="err of errors") {{err}}
+
+                        form(@submit="check($event)" method="POST")
+                            .field
+                                .control
+                                    input.input.is-large#user(name="user" type='text' placeholder="Usuario" v-model.trim="user" ref="user")
+
+                            .field(style='margin-top: 30px')
+                                .control
+                                    input.input.is-large#password(name="password" type='password' placeholder="Contraseña" v-model="password" ref="password")
+
+                            .field(style='margin-top: 50px')
+                                button.button.is-large.is-fullwidth.is-info(type="submit") Iniciar sesión
+
+                .subtitle.is-7(style='margin-top: 20px') Desarrollado por Alain Herrera Brito, Nodo Provincial, Matanzas, 2022.
+
+
+
+block scripts
+    script.
+        const { createApp } = Vue;
+
+        createApp({ 
+            data() { return { 
+                user: "",
+                password: "",
+                errors: !{JSON.stringify(errors || [])}
+            } },
+            methods: {
+                check(ev) {
+                    const t = this; 
+                    if (t.user.length === 0 || t.password.length == 0) {
+                        t.errors = ["El usuario y la contraseña son obligatorios"];
+                        if (t.user.length === 0)
+                            t.$refs.user.focus();
+                        else if (t.password.length == 0)
+                            t.$refs.password.focus();
+
+                        return ev.preventDefault();
+                    }
+
+                    t.errors = [];
+                }
+            }
+        }).mount('#app')
+
