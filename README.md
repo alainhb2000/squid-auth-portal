@@ -106,6 +106,7 @@ Portal de autenticación Web, para evitar peticiones con usuario y contraseña e
   > apt install mongodb-org
 * Instalar paquete pm2 con npm a nivel global, para la autoejecución del portal
   > npm i -g pm2
+  > 
   > pm2 startup
 * Copiar proyecto a una carpeta, por ejemplo: */portal*, luego ejecutar la aplicación con pm2 y guardar sesión
   > pm2 start /portal/app.js --name Auth_Portal
