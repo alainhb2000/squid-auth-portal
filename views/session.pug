@@ -75,8 +75,8 @@ block scripts
                     closedSession: false,
                     connected: true,
                     timer: '',
-                    startTime: moment.unix(#{session.startTime}),
-                    timeStarted: moment.unix(#{session.startTime}).format("hh:mm:ss a"),
+                    startTime: moment.unix(#{session.startTime}).local(),
+                    timeStarted: moment.unix(#{session.startTime}).local().format("hh:mm:ss a"),
                     timeElapsed: '',
                     errors: !{JSON.stringify(errors || [])}
                 }
@@ -89,7 +89,7 @@ block scripts
             },
             methods: {
                 refreshTime() {
-                    const seconds = moment(new Date()).diff(this.startTime, "seconds");
+                    const seconds = moment(new Date()).local().diff(this.startTime, "seconds");
                     this.timeElapsed = moment.duration(seconds, "seconds").format("dd:hh:mm:ss");
                 },
                 cancelRefresh() {
@@ -111,8 +111,8 @@ block scripts
                     });
                     ws.on('session-data', (dt) => {
                         t.account = dt.account;
-                        t.startTime = moment.unix(dt.startTime);
-                        t.timeStarted = moment.unix(dt.startTime).format("hh:mm:ss a");
+                        t.startTime = moment.unix(dt.startTime).local();
+                        t.timeStarted = moment.unix(dt.startTime).local().format("hh:mm:ss a");
                     })
                     ws.on('session-closed', (dt) => {
                         console.log(dt)
