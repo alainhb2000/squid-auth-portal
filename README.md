@@ -172,5 +172,5 @@ function FindProxyForURL(url, host) {
 > 
 > http_access deny deteccion_portal
 > 
-> deny_info 302:http://proxy.tld.cu deteccion_portal !ipauth
+> deny_info 303:http://proxy.mtz.jovenclub.cu all !ipauth
 
