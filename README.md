@@ -158,12 +158,17 @@ function FindProxyForURL(url, host) {
 > acl deteccion_portal url_regex ^http://detectportal.firefox.com/success.txt ^http://detectportal.firefox.com/canonical.html ^http://clients1.google.com/generate_204 ^http://clients2.google.com/generate_204 ^http://clients3.google.com/generate_204 ^http://connectivitycheck.gstatic.com/generate_204 ^http://www.msftncsi.com/ncsi.txt ^http://www.microsoftconnecttest.com/connecttest.txt ^http://ipv6.microsoftconnecttest.com/connecttest.txt ^http://captive.apple.com
 > 
 > acl ipauth external ipdbauth
->
+> 
 > acl internet external internetbd
->
+> 
 > acl intranet external intranetbd
 > 
-> http_access allow ipauth
+> http_access allow !cuba internet
+> 
+> http_access allow cuba internet
+> 
+> http_access allow cuba intranet
+
 > 
 > http_access deny deteccion_portal
 > 
