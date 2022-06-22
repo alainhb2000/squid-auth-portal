@@ -6,8 +6,7 @@ module.exports = (app, db) => {
 
             //aceptar ips de confianza
             if (Array.isArray(global.config.trustedIps) &&
-                global.config.trustedIps.indexOf(remoteIp) !== -1)
-            {
+                global.config.trustedIps.indexOf(remoteIp) !== -1) {
                 res.status(200);
                 res.end();
                 return;
@@ -29,4 +28,5 @@ module.exports = (app, db) => {
             res.end('not logged');
         }
     )
+
 }
