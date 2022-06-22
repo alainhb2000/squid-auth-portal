@@ -168,9 +168,6 @@ function FindProxyForURL(url, host) {
 > http_access allow cuba internet
 > 
 > http_access allow cuba intranet
-
-> 
-> http_access deny deteccion_portal
 > 
 > deny_info 303:http://proxy.mtz.jovenclub.cu all !ipauth
 
