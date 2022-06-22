@@ -4,7 +4,7 @@ module.exports = (app, db, ldap) => {
 
     app.get('/',
         async (req, res) => {
-            const remoteIp = req.socket.remoteAddress;
+            const remoteIp = req.ip || req.socket.remoteAddress;
 
             try {
                 const session = await db.Sessions.sessionExists(remoteIp);
@@ -26,7 +26,7 @@ module.exports = (app, db, ldap) => {
                 return res.render('index', {errors: ["Datos de autenticación incorrectos"]});
             }
 
-            const remoteIp = req.socket.remoteAddress;
+            const remoteIp = req.ip || req.socket.remoteAddress;
             const fixedUser = req.body.user.toLowerCase();
 
             try {
