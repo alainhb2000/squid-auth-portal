@@ -7,7 +7,7 @@ module.exports = (app, db, ldap, hub) => {
         .route('/session')
         .get(
             async (req, res) => {
-                const remoteIp = req.socket.remoteAddress;
+                const remoteIp = req.ip || req.socket.remoteAddress;
 
                 try {
                     const session = await db.Sessions.get(remoteIp);
@@ -24,7 +24,7 @@ module.exports = (app, db, ldap, hub) => {
         .post(
             bodyParser.urlencoded({extended: false}),
             async (req, res) => {
-                const remoteIp = req.socket.remoteAddress;
+                const remoteIp = req.ip || req.socket.remoteAddress;
                 try {
                     await db.Sessions.remove(remoteIp);
                     hub.closeSession(remoteIp);
