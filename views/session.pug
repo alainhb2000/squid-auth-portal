@@ -74,7 +74,8 @@ block scripts
                     account: "#{session.account}",
                     closedSession: false,
                     connected: true,
-                    timer: '',
+                    timer: null,
+                    refreshTimer: null,
                     startTime: moment.unix(#{session.startTime}).local(),
                     timeStarted: moment.unix(#{session.startTime}).local().format("hh:mm:ss a"),
                     timeElapsed: '',
@@ -95,14 +96,22 @@ block scripts
                 cancelRefresh() {
                     clearInterval(this.timer);
                 },
+                refreshSession() {
+                    const t = this;
+                    if (!t.connected) return;
+                    t.ws.emit('session-refresh', {ip: t.ip, account: t.account});
+                },
                 connect() {
                     const t = this;
                     const ws = io.connect('/keepalive', {transports: ['websocket']});
                     ws.on('connect', () => {
                         t.connected = true;
+                        if (t.refreshTimer) clearInterval(t.refreshTimer);
+                        t.refreshTimer = setInterval(t.refreshSession, 30000);
                     });
                     ws.on('disconnect', () => {
                         t.connected = false;
+                        if (t.refreshTimer) clearInterval(t.refreshTimer);
                     })
                     ws.on('no-session', () => {
                         t.closedConnection = true;
@@ -115,7 +124,6 @@ block scripts
                         t.timeStarted = moment.unix(dt.startTime).local().format("hh:mm:ss a");
                     })
                     ws.on('session-closed', (dt) => {
-                        console.log(dt)
                         if (dt !== this.ip) return;
                         t.closedConnection = true;
                         ws.disconnect();
