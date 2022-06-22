@@ -145,8 +145,10 @@ function FindProxyForURL(url, host) {
   > pm2 start /portal/app.js --name Auth_Portal
   > 
   > pm2 save
-* Dar acceso al usuario del squid al archivo */lib/squid-auth-helper.js*
+* Dar acceso al usuario del squid a los archivos */portal/lib/squid-auth-helper.js, /portal/lib/squid-group-helper.js*
   > chown proxy:proxy /portal/lib/squid-auth-helper.js
+  > 
+  > chown proxy:proxy /portal/lib/squid-group-helper.js
 
 # ACL en Squid
 > external_acl_type ipdbauth ttl=15 negative_ttl=0 %>a /usr/bin/node /portal/lib/squid-auth-helper.js
