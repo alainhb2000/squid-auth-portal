@@ -61,6 +61,11 @@ Portal de autenticación Web, para evitar peticiones con usuario y contraseña e
       <td>DN de usuarios, para el caso de OpenLDAP</td>
       <td>ou=Users,domainName=tld.cu,o=domains</td>
     </tr>
+	<tr>
+      <td>groupsDn</td>
+      <td>DN de grupos</td>
+      <td>ou=Groups,domainName=tld.cu,o=domains</td>
+    </tr>
     <tr>
       <td>isBehindWebserver</td>
       <td>Especificar si el portal se ejecutará detrás de un servidor Web (Apache, Ngix, etc)</td>
@@ -146,9 +151,17 @@ function FindProxyForURL(url, host) {
 # ACL en Squid
 > external_acl_type ipdbauth ttl=15 negative_ttl=0 %>a /usr/bin/node /portal/lib/squid-auth-helper.js
 > 
+> external_acl_type internetbd ttl=15 negative_ttl=0 %>a /usr/bin/node /portal/lib/squid-group-helper.js internet
+>
+> external_acl_type intranetbd ttl=15 negative_ttl=0 %>a /usr/bin/node /portal/lib/squid-group-helper.js intranet
+>
 > acl deteccion_portal url_regex ^http://detectportal.firefox.com/success.txt ^http://detectportal.firefox.com/canonical.html ^http://clients1.google.com/generate_204 ^http://clients2.google.com/generate_204 ^http://clients3.google.com/generate_204 ^http://connectivitycheck.gstatic.com/generate_204 ^http://www.msftncsi.com/ncsi.txt ^http://www.microsoftconnecttest.com/connecttest.txt ^http://ipv6.microsoftconnecttest.com/connecttest.txt ^http://captive.apple.com
 > 
 > acl ipauth external ipdbauth
+>
+> acl internet external internetbd
+>
+> acl intranet external intranetbd
 > 
 > http_access allow ipauth
 > 
